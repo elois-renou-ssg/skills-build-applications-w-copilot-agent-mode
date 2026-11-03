@@ -36,6 +36,15 @@ OctoFit Tracker is a three-tier application for a school fitness program. The st
 - Leaderboard: aggregate activity points by team, sort totals highest-first, and return `teamName`, `totalPoints`, and sequential 1-based ranks.
 - Workout suggestions: find the user by email, use their fitness goal and recent activities to choose a relevant available workout, and include a concise reason. Return a deliberate 4xx when no user matches.
 
+## Architecture validation plan
+
+Validate one boundary at a time, in dependency order. Use the automated commands below as gates; do not move to the next tier until the current tier's contract passes.
+
+1. **Data boundary:** pass the data-tier tests. Confirm model validation rejects incomplete records and repeated seeding preserves unrelated records while keeping seeded references consistent.
+2. **Logic boundary:** pass the API tests. Confirm services use persisted data, return the documented response shapes, and map malformed or unknown references to deliberate 4xx responses rather than 500 errors.
+3. **Presentation boundary:** pass the frontend tests. Confirm each view obtains data through the shared API client and exposes success, loading, empty, and accessible error states.
+4. **Cross-tier wiring:** pass both production builds, then run MongoDB, the Express API, and Vite on ports `27017`, `8000`, and `5173`. In the browser, verify relative `/api` requests reach Express through Vite's proxy and that each capability displays data from the seeded database. The API remains unauthenticated for this exercise.
+
 ## Test plan
 
 - Run the focused tier tests after each change, then run both builds before considering the implementation complete.
